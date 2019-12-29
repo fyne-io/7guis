@@ -1,4 +1,4 @@
-# 7 GUIS with Fyne
+# 7 GUIs using Fyne
 
 An implementation of the [7 GUIs challenge](https://eugenkiss.github.io/7guis/)
 using the [Fyne](https://fyne.io) toolkit.
