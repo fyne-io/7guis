@@ -9,12 +9,11 @@ import (
 	"fyne.io/fyne/widget"
 )
 
-var count int
-
 func main() {
 	a := app.New()
 	w := a.NewWindow("Counter")
 
+	count := 0
 	value := widget.NewLabel("0")
 	button := widget.NewButton("Count", func() {
 		count++
