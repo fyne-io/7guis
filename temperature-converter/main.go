@@ -21,8 +21,7 @@ func main() {
 	w := a.NewWindow("Temperature Converter")
 
 	// Create bindings
-	bindingFloat64C := &binding.Float64Binding{}
-	bindingFloat64F := &binding.Float64Binding{}
+	bindingKelvin := &KelvinBinding{}
 	bindingStringC := &binding.StringBinding{}
 	bindingStringF := &binding.StringBinding{}
 
@@ -38,7 +37,7 @@ func main() {
 		if err != nil {
 			return
 		}
-		bindingFloat64F.Set(f*(9.0/5.0) + 32)
+		bindingKelvin.SetCelsius(f)
 	})
 
 	bindingStringF.AddListener(func(text string) {
@@ -46,17 +45,35 @@ func main() {
 		if err != nil {
 			return
 		}
-		bindingFloat64C.Set((f - 32) * (5.0 / 9.0))
+		bindingKelvin.SetFahrenheit(f)
 	})
-	bindingFloat64C.AddListener(func (f float64) {
-		bindingStringC.Set(fmt.Sprintf("%f", f))
-	})
-	bindingFloat64F.AddListener(func (f float64) {
-		bindingStringF.Set(fmt.Sprintf("%f", f))
+	bindingKelvin.AddListener(func (f float64) {
+		bindingStringC.Set(fmt.Sprintf("%.2f", bindingKelvin.GetCelsius()))
+		bindingStringF.Set(fmt.Sprintf("%.2f", bindingKelvin.GetFahrenheit()))
 	})
 
 	w.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(4),
 		inputC, widget.NewLabel("Celsius ="), inputF, widget.NewLabel("Fahrenheit")))
 
 	w.ShowAndRun()
+}
+
+type KelvinBinding struct {
+	binding.Float64Binding
+}
+
+func (b *KelvinBinding) GetCelsius() float64 {
+	return b.Get()-273.15
+}
+
+func (b *KelvinBinding) GetFahrenheit() float64 {
+	return (b.Get() - 273.15) * 9.0/5.0 + 32
+}
+
+func (b *KelvinBinding) SetCelsius(c float64) {
+	b.Set(c+273.15)
+}
+
+func (b *KelvinBinding) SetFahrenheit(f float64) {
+	b.Set((f - 32) * 5.0/9.0 + 273.15)
 }
