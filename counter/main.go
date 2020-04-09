@@ -15,8 +15,8 @@ func main() {
 	w := a.NewWindow("Counter")
 
 	// Create bindings
-	bindInt := &binding.IntBinding{}
-	bindString := &binding.StringBinding{}
+	bindInt := binding.NewIntBinding(0)
+	bindString := binding.NewStringBinding("")
 
 	// Configure int to string pipeline
 	bindInt.AddListener(func(i int) {
@@ -24,13 +24,11 @@ func main() {
 	})
 
 	// Create widgets
-	value := widget.NewLabel("0")
-	value.BindText(bindString)
+	value := widget.NewLabel("0").BindText(bindString)
 	button := widget.NewButton("Count", func() {
 		bindInt.Set(bindInt.Get() + 1)
 	})
 
-	w.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(2),
-		value, button))
+	w.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(2), value, button))
 	w.ShowAndRun()
 }
