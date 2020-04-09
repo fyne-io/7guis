@@ -47,7 +47,7 @@ func main() {
 		}
 		bindingKelvin.SetFahrenheit(f)
 	})
-	bindingKelvin.AddListener(func (f float64) {
+	bindingKelvin.AddListener(func(f float64) {
 		bindingStringC.Set(fmt.Sprintf("%.2f", bindingKelvin.GetCelsius()))
 		bindingStringF.Set(fmt.Sprintf("%.2f", bindingKelvin.GetFahrenheit()))
 	})
@@ -63,17 +63,17 @@ type KelvinBinding struct {
 }
 
 func (b *KelvinBinding) GetCelsius() float64 {
-	return b.Get()-273.15
+	return b.Get() - 273.15
 }
 
 func (b *KelvinBinding) GetFahrenheit() float64 {
-	return (b.Get() - 273.15) * 9.0/5.0 + 32
+	return (b.Get()-273.15)*9.0/5.0 + 32
 }
 
 func (b *KelvinBinding) SetCelsius(c float64) {
-	b.Set(c+273.15)
+	b.Set(c + 273.15)
 }
 
 func (b *KelvinBinding) SetFahrenheit(f float64) {
-	b.Set((f - 32) * 5.0/9.0 + 273.15)
+	b.Set((f-32)*5.0/9.0 + 273.15)
 }
