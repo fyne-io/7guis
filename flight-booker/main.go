@@ -24,12 +24,9 @@ func main() {
 	returnDate := &binding.StringBinding{}
 
 	// Create widgets
-	combo := widget.NewSelect(flightTypes, nil)
-	combo.BindSelected(flightType)
-	entry1 := widget.NewEntry()
-	entry1.BindText(startDate)
-	entry2 := widget.NewEntry()
-	entry2.BindText(returnDate)
+	combo := widget.NewSelect(flightTypes, nil).BindSelected(flightType)
+	entry1 := widget.NewEntry().BindText(startDate)
+	entry2 := widget.NewEntry().BindText(returnDate)
 	button := widget.NewButton("Book", func() {
 		dialog.ShowInformation("Information", fmt.Sprintf("You booked a %s on %s", flightType.Get(), startDate.Get()), w)
 	})
