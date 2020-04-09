@@ -20,37 +20,14 @@ func main() {
 	a := app.New()
 	w := a.NewWindow("Temperature Converter")
 
-	// Create bindings
-	bindingKelvin := &KelvinBinding{}
-	bindingStringC := &binding.StringBinding{}
-	bindingStringF := &binding.StringBinding{}
+	// Create binding
+	bindingKelvin := NewKelvinBinding()
 
 	// Create widgets
 	inputC := widget.NewEntry()
-	inputC.BindText(bindingStringC)
+	inputC.BindText(bindingKelvin.Celsius)
 	inputF := widget.NewEntry()
-	inputF.BindText(bindingStringF)
-
-	// Configure pipeline
-	bindingStringC.AddListener(func(text string) {
-		f, err := strconv.ParseFloat(text, 64)
-		if err != nil {
-			return
-		}
-		bindingKelvin.SetCelsius(f)
-	})
-
-	bindingStringF.AddListener(func(text string) {
-		f, err := strconv.ParseFloat(text, 64)
-		if err != nil {
-			return
-		}
-		bindingKelvin.SetFahrenheit(f)
-	})
-	bindingKelvin.AddListener(func(f float64) {
-		bindingStringC.Set(fmt.Sprintf("%.2f", bindingKelvin.GetCelsius()))
-		bindingStringF.Set(fmt.Sprintf("%.2f", bindingKelvin.GetFahrenheit()))
-	})
+	inputF.BindText(bindingKelvin.Fahrenheit)
 
 	w.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(4),
 		inputC, widget.NewLabel("Celsius ="), inputF, widget.NewLabel("Fahrenheit")))
@@ -60,6 +37,33 @@ func main() {
 
 type KelvinBinding struct {
 	binding.Float64Binding
+	Celsius, Fahrenheit *binding.StringBinding
+}
+
+func NewKelvinBinding() *KelvinBinding {
+	kb := &KelvinBinding{
+		Celsius:    &binding.StringBinding{},
+		Fahrenheit: &binding.StringBinding{},
+	}
+	kb.Celsius.AddListener(func(text string) {
+		f, err := strconv.ParseFloat(text, 64)
+		if err != nil {
+			return
+		}
+		kb.SetCelsius(f)
+	})
+	kb.Fahrenheit.AddListener(func(text string) {
+		f, err := strconv.ParseFloat(text, 64)
+		if err != nil {
+			return
+		}
+		kb.SetFahrenheit(f)
+	})
+	kb.AddListener(func(float64) {
+		kb.Celsius.Set(fmt.Sprintf("%.2f", kb.GetCelsius()))
+		kb.Fahrenheit.Set(fmt.Sprintf("%.2f", kb.GetFahrenheit()))
+	})
+	return kb
 }
 
 func (b *KelvinBinding) GetCelsius() float64 {
