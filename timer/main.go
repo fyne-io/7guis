@@ -21,13 +21,9 @@ func main() {
 	bindElapsedString := &binding.StringBinding{}
 
 	// Create widgets
-	elapsedProgressBar := widget.NewProgressBar()
-	elapsedProgressBar.BindValue(bindElapsed)
-	elapsedProgressBar.BindMax(bindDuration)
-	elapsedLabel := widget.NewLabel("")
-	elapsedLabel.BindText(bindElapsedString)
-	durationSlider := widget.NewSlider(0, 100)
-	durationSlider.BindValue(bindDuration)
+	elapsedProgressBar := widget.NewProgressBar().BindValue(bindElapsed).BindMax(bindDuration)
+	elapsedLabel := widget.NewLabel("").BindText(bindElapsedString)
+	durationSlider := widget.NewSlider(1, 100).BindValue(bindDuration)
 	resetButton := widget.NewButton("Reset", func() {
 		bindElapsed.Set(0.0)
 	})
