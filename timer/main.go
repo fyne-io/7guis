@@ -29,7 +29,7 @@ func main() {
 	})
 
 	// Configure pipeline
-	bindElapsed.AddListener(func(f float64) {
+	bindElapsed.AddFloat64Listener(func(f float64) {
 		bindElapsedString.Set(fmt.Sprintf("%.1fs", f))
 	})
 
