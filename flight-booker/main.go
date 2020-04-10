@@ -56,9 +56,9 @@ func main() {
 		}
 		button.Enable()
 	}
-	startDate.AddListener(update)
-	returnDate.AddListener(update)
-	flightType.AddListener(func(s string) {
+	startDate.AddStringListener(update)
+	returnDate.AddStringListener(update)
+	flightType.AddStringListener(func(s string) {
 		if s == flightTypes[1] {
 			entry2.Enable()
 		} else {
