@@ -19,7 +19,7 @@ func main() {
 	bindString := binding.NewStringBinding("")
 
 	// Configure int to string pipeline
-	bindInt.AddListener(func(i int) {
+	bindInt.AddIntListener(func(i int) {
 		bindString.Set(fmt.Sprintf("%d", i))
 	})
 
