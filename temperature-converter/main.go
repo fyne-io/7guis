@@ -40,9 +40,9 @@ func NewTemperatureBinding() *TemperatureBinding {
 		Celsius:    binding.NewStringBinding(""),
 		Fahrenheit: binding.NewStringBinding(""),
 	}
-	kb.Celsius.AddListener(parseFloat64To(kb.SetCelsius))
-	kb.Fahrenheit.AddListener(parseFloat64To(kb.SetFahrenheit))
-	kb.AddListener(func(float64) {
+	kb.Celsius.AddStringListener(parseFloat64To(kb.SetCelsius))
+	kb.Fahrenheit.AddStringListener(parseFloat64To(kb.SetFahrenheit))
+	kb.AddListenerFunction(func(binding.Binding) {
 		kb.Celsius.Set(fmt.Sprintf("%.2f", kb.GetCelsius()))
 		kb.Fahrenheit.Set(fmt.Sprintf("%.2f", kb.GetFahrenheit()))
 	})
