@@ -9,5 +9,14 @@ A simple counter that increments each time the "Count" button is pressed
 
 `go get github.com/fyne-io/7guis/counter`
 
-![](img/counter.png)
+<img src="img/counter.png" width="242" alt="counter GUI" />
+
+## Temperature Converter
+
+The temperature converter allows users to enter a value in degrees C or
+degrees F and will automatically update the other field.
+
+`go get github.com/fyne-io/7guis/temperature-converter`
+
+<img src="img/temperature-converter.png" width="476" alt="temperature converter GUI" />
 
