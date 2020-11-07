@@ -3,7 +3,7 @@ package main
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
-	"fyne.io/fyne/dataapi"
+	"fyne.io/fyne/binding"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 )
@@ -12,12 +12,12 @@ func main() {
 	a := app.New()
 	w := a.NewWindow("Counter")
 
-	count := dataapi.NewInt(0)
+	count := binding.NewInt()
 	button := widget.NewButton("Count", func() {
-		count.SetInt(count.Value()+1)
+		count.Set(count.Get()+1)
 	})
 
 	w.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(2),
-		widget.NewLabel("0").Bind(count), button))
+		widget.NewLabelWithData(binding.IntToString(count)), button))
 	w.ShowAndRun()
 }

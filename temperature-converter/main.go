@@ -3,7 +3,7 @@ package main
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
-	"fyne.io/fyne/dataapi"
+	"fyne.io/fyne/binding"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 )
@@ -12,20 +12,20 @@ func main() {
 	a := app.New()
 	w := a.NewWindow("Temperature Converter")
 
-	valueC := dataapi.NewFloat(0)
-	valueF := dataapi.NewFloat(0)
-	valueC.AddListener(func(data dataapi.DataItem) {
-		fDeg := valueC.Value()*(9.0/5.0) + 32
-		valueF.SetFloat(fDeg)
-	})
-	valueF.AddListener(func(data dataapi.DataItem) {
-		cDeg := (valueF.Value() - 32) * (5.0 / 9.0)
-		valueC.SetFloat(cDeg)
-	})
+	valueC := binding.NewFloat()
+	valueF := binding.NewFloat()
+	valueC.AddListener(binding.NewDataItemListener(func(data binding.DataItem) {
+		fDeg := valueC.Get()*(9.0/5.0) + 32
+		valueF.Set(fDeg)
+	}))
+	valueF.AddListener(binding.NewDataItemListener(func(data binding.DataItem) {
+		cDeg := (valueF.Get() - 32) * (5.0 / 9.0)
+		valueC.Set(cDeg)
+	}))
 
 	w.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(4),
-		widget.NewEntry().Bind(valueC), widget.NewLabel("Celsius ="),
-		widget.NewEntry().Bind(valueF), widget.NewLabel("Fahrenheit")))
+		widget.NewEntryWithData(binding.FloatToString(valueC)), widget.NewLabel("Celsius ="),
+		widget.NewEntryWithData(binding.FloatToString(valueF)), widget.NewLabel("Fahrenheit")))
 
 	w.ShowAndRun()
 }
