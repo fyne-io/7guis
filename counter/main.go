@@ -3,7 +3,7 @@ package main
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
-	"fyne.io/fyne/binding"
+	"fyne.io/fyne/data/binding"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 )

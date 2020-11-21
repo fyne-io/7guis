@@ -3,7 +3,7 @@ package main
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
-	"fyne.io/fyne/binding"
+	"fyne.io/fyne/data/binding"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 )
@@ -14,11 +14,11 @@ func main() {
 
 	valueC := binding.NewFloat()
 	valueF := binding.NewFloat()
-	valueC.AddListener(binding.NewDataItemListener(func(data binding.DataItem) {
+	valueC.AddListener(binding.NewDataListener(func() {
 		fDeg := valueC.Get()*(9.0/5.0) + 32
 		valueF.Set(fDeg)
 	}))
-	valueF.AddListener(binding.NewDataItemListener(func(data binding.DataItem) {
+	valueF.AddListener(binding.NewDataListener(func() {
 		cDeg := (valueF.Get() - 32) * (5.0 / 9.0)
 		valueC.Set(cDeg)
 	}))
