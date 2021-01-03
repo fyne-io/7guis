@@ -15,11 +15,13 @@ func main() {
 	valueC := binding.NewFloat()
 	valueF := binding.NewFloat()
 	valueC.AddListener(binding.NewDataListener(func() {
-		fDeg := valueC.Get()*(9.0/5.0) + 32
+		cDeg, _ := valueC.Get()
+		fDeg := cDef*(9.0/5.0) + 32
 		valueF.Set(fDeg)
 	}))
 	valueF.AddListener(binding.NewDataListener(func() {
-		cDeg := (valueF.Get() - 32) * (5.0 / 9.0)
+		fDeg, _ := valueF.Get()
+		cDeg := (fDeg - 32) * (5.0 / 9.0)
 		valueC.Set(cDeg)
 	}))
 
