@@ -14,7 +14,8 @@ func main() {
 
 	count := binding.NewInt()
 	button := widget.NewButton("Count", func() {
-		count.Set(count.Get()+1)
+		i, _ := count.Get()
+		count.Set(i+1)
 	})
 
 	w.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(2),
