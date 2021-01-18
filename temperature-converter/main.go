@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/app"
-	"fyne.io/fyne/data/binding"
-	"fyne.io/fyne/layout"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/widget"
 )
 
 func main() {
@@ -13,21 +12,31 @@ func main() {
 	w := a.NewWindow("Temperature Converter")
 
 	valueC := binding.NewFloat()
-	valueF := binding.NewFloat()
-	valueC.AddListener(binding.NewDataListener(func() {
-		cDeg, _ := valueC.Get()
-		fDeg := cDef*(9.0/5.0) + 32
-		valueF.Set(fDeg)
-	}))
-	valueF.AddListener(binding.NewDataListener(func() {
-		fDeg, _ := valueF.Get()
-		cDeg := (fDeg - 32) * (5.0 / 9.0)
-		valueC.Set(cDeg)
-	}))
+	valueF := celsiusToFarenheit(valueC)
 
-	w.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(4),
+	w.SetContent(container.NewGridWithColumns(4,
 		widget.NewEntryWithData(binding.FloatToString(valueC)), widget.NewLabel("Celsius ="),
 		widget.NewEntryWithData(binding.FloatToString(valueF)), widget.NewLabel("Fahrenheit")))
 
 	w.ShowAndRun()
+}
+
+type cToF struct {
+	binding.Float
+}
+
+func (c *cToF) Get() (float64, error) {
+	cDeg, _ := c.Float.Get()
+	fDeg := cDeg*(9.0/5.0) + 32
+	return fDeg, nil
+}
+
+func (c *cToF) Set(f float64) error {
+	cDeg := (f - 32) * (5.0 / 9.0)
+	c.Float.Set(cDeg)
+	return nil
+}
+
+func celsiusToFarenheit(in binding.Float) binding.Float {
+	return &cToF{in}
 }
