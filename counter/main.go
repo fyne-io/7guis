@@ -14,7 +14,7 @@ func main() {
 	count := binding.NewInt()
 	button := widget.NewButton("Count", func() {
 		i, _ := count.Get()
-		_ = count.Set(i+1)
+		_ = count.Set(i + 1)
 	})
 
 	w.SetContent(container.NewGridWithColumns(2,
