@@ -21,10 +21,44 @@ func main() {
 	}, func(id widget.ListItemID, o fyne.CanvasObject) {
 		o.(*widget.Label).SetText(people[id].String())
 	})
+
+	update := widget.NewButton("Update", func() {
+		if selected < 0 || selected >= len(people) {
+			return
+		}
+
+		people[selected].name = name.Text
+		people[selected].surname = surname.Text
+		list.Refresh()
+	})
+	update.Disable()
+	delete := widget.NewButton("Delete", func() {
+			if selected < 0 || selected >= len(people) || len(people) == 0 {
+				return
+			}
+
+			if selected == 0 {
+				people = people[1:]
+			} else if selected == len(people) - 1 {
+				people = people[:len(people)-1]
+			} else {
+				people = append(people[:selected], people[selected+1:]...)
+			}
+			list.Refresh()
+		})
+	delete.Disable()
+
 	list.OnSelected = func(id widget.ListItemID) {
 		selected = id
 		name.SetText(people[id].name)
 		surname.SetText(people[id].surname)
+
+		update.Enable()
+		delete.Enable()
+	}
+	list.OnUnselected = func(id widget.ListItemID) {
+		update.Disable()
+		delete.Disable()
 	}
 
 	form := widget.NewForm(
@@ -38,30 +72,9 @@ func main() {
 			p := &person{name: name.Text, surname: surname.Text}
 			people = append(people, p)
 			list.Refresh()
+			list.Select(len(people)-1)
 		}),
-		widget.NewButton("Update", func() {
-			if selected < 0 || selected >= len(people) {
-				return
-			}
-
-			people[selected].name = name.Text
-			people[selected].surname = surname.Text
-			list.Refresh()
-		}),
-		widget.NewButton("Delete", func() {
-			if selected < 0 || selected >= len(people) || len(people) == 0 {
-				return
-			}
-
-			if selected == 0 {
-				people = people[1:]
-			} else if selected == len(people) - 1 {
-				people = people[:len(people)-1]
-			} else {
-				people = append(people[:selected], people[selected+1:]...)
-			}
-			list.Refresh()
-		}))
+		update, delete)
 
 	grid := container.NewGridWithColumns(2, list, form)
 	w.SetContent(
