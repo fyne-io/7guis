@@ -38,23 +38,23 @@ func main() {
 	update.Disable()
 	var delete *widget.Button
 	delete = widget.NewButton("Delete", func() {
-			if selected < 0 || selected >= len(people) || len(people) == 0 {
-				return
-			}
+		if selected < 0 || selected >= len(people) || len(people) == 0 {
+			return
+		}
 
-			if selected == 0 {
-				people = people[1:]
-			} else if selected == len(people) - 1 {
-				people = people[:len(people)-1]
-			} else {
-				people = append(people[:selected], people[selected+1:]...)
-			}
-			filtered = noFilter()
-			list.UnselectAll()
-			list.Refresh()
-			update.Disable()
-			delete.Disable()
-		})
+		if selected == 0 {
+			people = people[1:]
+		} else if selected == len(people)-1 {
+			people = people[:len(people)-1]
+		} else {
+			people = append(people[:selected], people[selected+1:]...)
+		}
+		filtered = noFilter()
+		list.UnselectAll()
+		list.Refresh()
+		update.Disable()
+		delete.Disable()
+	})
 	delete.Disable()
 
 	list.OnSelected = func(id widget.ListItemID) {
@@ -86,7 +86,7 @@ func main() {
 		}
 
 		prefix = strings.ToLower(prefix)
-		f := []int {}
+		f := []int{}
 		for i, p := range people {
 			if strings.Index(strings.ToLower(p.surname), prefix) == 0 {
 				f = append(f, i)
@@ -103,7 +103,7 @@ func main() {
 			people = append(people, p)
 			filtered = noFilter()
 			list.Refresh()
-			list.Select(len(people)-1)
+			list.Select(len(people) - 1)
 		}),
 		update, delete)
 
