@@ -9,35 +9,20 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-var filtered = noFilter()
+var (
+	filtered = noFilter()
+	selected = -1
+)
 
-func main() {
-	selected := -1
-	a := app.New()
-	w := a.NewWindow("CRUD")
+type gui struct {
+	update, delete *widget.Button
+	name, surname  *widget.Entry
+	list           *widget.List
+}
 
-	name := widget.NewEntry()
-	surname := widget.NewEntry()
-	list := widget.NewList(func() int {
-		return len(filtered)
-	}, func() fyne.CanvasObject {
-		return widget.NewLabel("")
-	}, func(id widget.ListItemID, o fyne.CanvasObject) {
-		o.(*widget.Label).SetText(people[filtered[id]].String())
-	})
-
-	update := widget.NewButton("Update", func() {
-		if selected < 0 || selected >= len(people) {
-			return
-		}
-
-		people[selected].name = name.Text
-		people[selected].surname = surname.Text
-		list.Refresh()
-	})
-	update.Disable()
-	var delete *widget.Button
-	delete = widget.NewButton("Delete", func() {
+func (g *gui) createDelete() *widget.Button {
+	var btn *widget.Button
+	btn = widget.NewButton("Delete", func() {
 		if selected < 0 || selected >= len(people) || len(people) == 0 {
 			return
 		}
@@ -50,38 +35,24 @@ func main() {
 			people = append(people[:selected], people[selected+1:]...)
 		}
 		filtered = noFilter()
-		list.UnselectAll()
-		list.Refresh()
-		update.Disable()
-		delete.Disable()
+		g.list.UnselectAll()
+		g.list.Refresh()
+		g.update.Disable()
+		btn.Disable()
 	})
-	delete.Disable()
+	btn.Disable()
+	return btn
+}
 
-	list.OnSelected = func(id widget.ListItemID) {
-		selected = filtered[id]
-		name.SetText(people[selected].name)
-		surname.SetText(people[selected].surname)
-
-		update.Enable()
-		delete.Enable()
-	}
-	list.OnUnselected = func(id widget.ListItemID) {
-		update.Disable()
-		delete.Disable()
-	}
-
-	form := widget.NewForm(
-		widget.NewFormItem("Name", name),
-		widget.NewFormItem("Surname", surname))
-
-	filter := widget.NewEntry()
-	filter.OnChanged = func(prefix string) {
-		list.UnselectAll()
-		update.Disable()
-		delete.Disable()
+func (g *gui) createFilter() *widget.Entry {
+	f := widget.NewEntry()
+	f.OnChanged = func(prefix string) {
+		g.list.UnselectAll()
+		g.update.Disable()
+		g.delete.Disable()
 		if prefix == "" {
 			filtered = noFilter()
-			list.Refresh()
+			g.list.Refresh()
 			return
 		}
 
@@ -93,21 +64,79 @@ func main() {
 			}
 		}
 		filtered = f
-		list.Refresh()
+		g.list.Refresh()
 	}
-	top := container.NewGridWithColumns(2,
-		widget.NewForm(widget.NewFormItem("Filter prefix:", filter)))
-	bottom := container.NewHBox(
-		widget.NewButton("Create", func() {
-			p := &person{name: name.Text, surname: surname.Text}
-			people = append(people, p)
-			filtered = noFilter()
-			list.Refresh()
-			list.Select(len(people) - 1)
-		}),
-		update, delete)
+	return f
+}
 
-	grid := container.NewGridWithColumns(2, list, form)
+func (g *gui) createList() *widget.List {
+	l := widget.NewList(func() int {
+		return len(filtered)
+	}, func() fyne.CanvasObject {
+		return widget.NewLabel("")
+	}, func(id widget.ListItemID, o fyne.CanvasObject) {
+		o.(*widget.Label).SetText(people[filtered[id]].String())
+	})
+
+	l.OnSelected = func(id widget.ListItemID) {
+		selected = filtered[id]
+		g.name.SetText(people[selected].name)
+		g.surname.SetText(people[selected].surname)
+
+		g.update.Enable()
+		g.delete.Enable()
+	}
+	l.OnUnselected = func(id widget.ListItemID) {
+		g.update.Disable()
+		g.delete.Disable()
+	}
+
+	return l
+}
+
+func (g *gui) createNew() *widget.Button {
+	return widget.NewButton("Create", func() {
+		p := &person{name: g.name.Text, surname: g.surname.Text}
+		people = append(people, p)
+		filtered = noFilter()
+		g.list.Refresh()
+		g.list.Select(len(people) - 1)
+	})
+}
+
+func (g *gui) createUpdate() *widget.Button {
+	btn := widget.NewButton("Update", func() {
+		if selected < 0 || selected >= len(people) {
+			return
+		}
+
+		people[selected].name = g.name.Text
+		people[selected].surname = g.surname.Text
+		g.list.Refresh()
+	})
+	btn.Disable()
+	return btn
+}
+
+func main() {
+	a := app.New()
+	w := a.NewWindow("CRUD")
+
+	g := gui{name: widget.NewEntry(), surname: widget.NewEntry()}
+	g.list = g.createList()
+	g.update = g.createUpdate()
+	g.delete = g.createDelete()
+
+	form := widget.NewForm(
+		widget.NewFormItem("Name", g.name),
+		widget.NewFormItem("Surname", g.surname))
+
+	top := container.NewGridWithColumns(2,
+		widget.NewForm(widget.NewFormItem("Filter prefix:", g.createFilter())))
+	bottom := container.NewHBox(g.createNew(),
+		g.update, g.delete)
+
+	grid := container.NewGridWithColumns(2, g.list, form)
 	w.SetContent(
 		container.NewBorder(top, bottom, nil, nil, grid))
 	w.ShowAndRun()
