@@ -9,32 +9,30 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-var (
-	filtered = noFilter()
-	selected = -1
-)
-
 type gui struct {
 	update, delete *widget.Button
 	name, surname  *widget.Entry
 	list           *widget.List
+
+	filtered []int
+	selected int
 }
 
 func (g *gui) createDelete() *widget.Button {
 	var btn *widget.Button
 	btn = widget.NewButton("Delete", func() {
-		if selected < 0 || selected >= len(people) || len(people) == 0 {
+		if g.selected < 0 || g.selected >= len(people) || len(people) == 0 {
 			return
 		}
 
-		if selected == 0 {
+		if g.selected == 0 {
 			people = people[1:]
-		} else if selected == len(people)-1 {
+		} else if g.selected == len(people)-1 {
 			people = people[:len(people)-1]
 		} else {
-			people = append(people[:selected], people[selected+1:]...)
+			people = append(people[:g.selected], people[g.selected+1:]...)
 		}
-		filtered = noFilter()
+		g.filtered = noFilter()
 		g.list.UnselectAll()
 		g.list.Refresh()
 		g.update.Disable()
@@ -51,7 +49,7 @@ func (g *gui) createFilter() *widget.Entry {
 		g.update.Disable()
 		g.delete.Disable()
 		if prefix == "" {
-			filtered = noFilter()
+			g.filtered = noFilter()
 			g.list.Refresh()
 			return
 		}
@@ -63,7 +61,7 @@ func (g *gui) createFilter() *widget.Entry {
 				f = append(f, i)
 			}
 		}
-		filtered = f
+		g.filtered = f
 		g.list.Refresh()
 	}
 	return f
@@ -71,17 +69,17 @@ func (g *gui) createFilter() *widget.Entry {
 
 func (g *gui) createList() *widget.List {
 	l := widget.NewList(func() int {
-		return len(filtered)
+		return len(g.filtered)
 	}, func() fyne.CanvasObject {
 		return widget.NewLabel("")
 	}, func(id widget.ListItemID, o fyne.CanvasObject) {
-		o.(*widget.Label).SetText(people[filtered[id]].String())
+		o.(*widget.Label).SetText(people[g.filtered[id]].String())
 	})
 
 	l.OnSelected = func(id widget.ListItemID) {
-		selected = filtered[id]
-		g.name.SetText(people[selected].name)
-		g.surname.SetText(people[selected].surname)
+		g.selected = g.filtered[id]
+		g.name.SetText(people[g.selected].name)
+		g.surname.SetText(people[g.selected].surname)
 
 		g.update.Enable()
 		g.delete.Enable()
@@ -98,7 +96,7 @@ func (g *gui) createNew() *widget.Button {
 	return widget.NewButton("Create", func() {
 		p := &person{name: g.name.Text, surname: g.surname.Text}
 		people = append(people, p)
-		filtered = noFilter()
+		g.filtered = noFilter()
 		g.list.Refresh()
 		g.list.Select(len(people) - 1)
 	})
@@ -106,12 +104,12 @@ func (g *gui) createNew() *widget.Button {
 
 func (g *gui) createUpdate() *widget.Button {
 	btn := widget.NewButton("Update", func() {
-		if selected < 0 || selected >= len(people) {
+		if g.selected < 0 || g.selected >= len(people) {
 			return
 		}
 
-		people[selected].name = g.name.Text
-		people[selected].surname = g.surname.Text
+		people[g.selected].name = g.name.Text
+		people[g.selected].surname = g.surname.Text
 		g.list.Refresh()
 	})
 	btn.Disable()
@@ -122,7 +120,7 @@ func main() {
 	a := app.New()
 	w := a.NewWindow("CRUD")
 
-	g := gui{name: widget.NewEntry(), surname: widget.NewEntry()}
+	g := gui{name: widget.NewEntry(), surname: widget.NewEntry(), filtered: noFilter(), selected: -1}
 	g.list = g.createList()
 	g.update = g.createUpdate()
 	g.delete = g.createDelete()
