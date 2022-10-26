@@ -5,7 +5,7 @@ using the [Fyne](https://fyne.io) toolkit.
 
 ## Counter
 
-A simple counter that increments each time the "Count" button is pressed
+A simple counter that increments each time the "Count" button is pressed.
 
 `go get github.com/fyne-io/7guis/counter`
 
@@ -20,3 +20,11 @@ degrees F and will automatically update the other field.
 
 <img src="img/temperature-converter.png" width="476" alt="temperature converter GUI" />
 
+## CRUD
+
+Demonstration of how data is separated from rendering supporting create,
+read, update and delete.
+
+`go get github.com/fyne-io/7guis/crud`
+
+<img src="img/crud.png" width="410" alt="counter GUI" />
